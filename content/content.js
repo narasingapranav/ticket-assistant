@@ -1,5 +1,3 @@
-// content/content.js
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'checkPage') {
     const adapter = determineAdapter();
@@ -18,7 +16,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     
     if (typeof AutofillEngine !== 'undefined') {
-      const stats = AutofillEngine.fill(request.profile, adapter);
+      // Support array of profiles
+      const profilesToFill = request.profiles || (request.profile ? [request.profile] : []);
+      const stats = AutofillEngine.fill(profilesToFill, adapter);
       sendResponse({ success: true, stats: stats });
     } else {
       sendResponse({ success: false, error: "Autofill engine not loaded." });
@@ -29,13 +29,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function determineAdapter() {
   const url = window.location.href;
-  
-  // TTD Check (assuming standard TTD URL or our mock test page)
   if (url.includes('tirupatibalaji.ap.gov.in') || url.includes('booking.html')) {
     if (typeof TTDAdapter !== 'undefined') {
       return TTDAdapter;
     }
   }
-  
   return null;
 }

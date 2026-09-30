@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const profileSelect = document.getElementById('profileSelect');
   const fillFormBtn = document.getElementById('fillFormBtn');
-  const manageBtn = document.getElementById('manageBtn');
+  const newProfileBtn = document.getElementById('newProfileBtn');
   const profileForm = document.getElementById('profileForm');
   const saveProfileBtn = document.getElementById('saveProfileBtn');
   const cancelProfileBtn = document.getElementById('cancelProfileBtn');
@@ -17,54 +16,72 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadProfiles() {
     currentProfiles = await ProfileStorage.getProfiles();
-    profileSelect.innerHTML = '<option value="">-- Select Profile --</option>';
-    currentProfiles.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = p.name || 'Unnamed Profile';
-      profileSelect.appendChild(opt);
-    });
-    if (currentProfiles.length > 0) {
-      profileSelect.value = currentProfiles[0].id;
+    const profileList = document.getElementById('profileList');
+    profileList.innerHTML = '';
+    
+    if (currentProfiles.length === 0) {
+      profileList.innerHTML = '<div style="padding: 5px; color: #777; font-size: 12px;">No profiles found.</div>';
+      return;
     }
+
+    currentProfiles.forEach((p, i) => {
+      const item = document.createElement('div');
+      item.className = 'profile-item';
+      
+      const lbl = document.createElement('label');
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.value = p.id;
+      chk.className = 'profile-checkbox';
+      // Auto-check the first one by default if none checked previously (optional, but good UX)
+      if (i === 0) chk.checked = true;
+      
+      lbl.appendChild(chk);
+      lbl.appendChild(document.createTextNode(p.name || 'Unnamed'));
+      
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => openEditForm(p);
+
+      item.appendChild(lbl);
+      item.appendChild(editBtn);
+      profileList.appendChild(item);
+    });
   }
 
   await loadProfiles();
 
-  // Manage UI
-  manageBtn.addEventListener('click', () => {
+  function openEditForm(p) {
     profileForm.classList.remove('hidden');
-    const selectedId = profileSelect.value;
-    if (selectedId) {
-      const p = currentProfiles.find(x => x.id === selectedId);
-      if (p) {
-        document.getElementById('pid').value = p.id;
-        document.getElementById('pname').value = p.name || '';
-        document.getElementById('pgender').value = p.gender || '';
-        document.getElementById('page').value = p.age || '';
-        document.getElementById('pidType').value = p.idType || '';
-        document.getElementById('pidNumber').value = p.idNumber || '';
-        document.getElementById('pmobile').value = p.mobile || '';
-        document.getElementById('pcity').value = p.city || '';
-        document.getElementById('pstate').value = p.state || '';
-        document.getElementById('ppincode').value = p.pincode || '';
-        deleteProfileBtn.style.display = 'block';
-        return;
-      }
+    if (p) {
+      document.getElementById('pid').value = p.id;
+      document.getElementById('pname').value = p.name || '';
+      document.getElementById('pgender').value = p.gender || '';
+      document.getElementById('page').value = p.age || '';
+      document.getElementById('pidType').value = p.idType || '';
+      document.getElementById('pidNumber').value = p.idNumber || '';
+      document.getElementById('pmobile').value = p.mobile || '';
+      document.getElementById('pcity').value = p.city || '';
+      document.getElementById('pstate').value = p.state || '';
+      document.getElementById('ppincode').value = p.pincode || '';
+      deleteProfileBtn.style.display = 'block';
+    } else {
+      document.getElementById('pid').value = '';
+      document.getElementById('pname').value = '';
+      document.getElementById('pgender').value = '';
+      document.getElementById('page').value = '';
+      document.getElementById('pidType').value = '';
+      document.getElementById('pidNumber').value = '';
+      document.getElementById('pmobile').value = '';
+      document.getElementById('pcity').value = '';
+      document.getElementById('pstate').value = '';
+      document.getElementById('ppincode').value = '';
+      deleteProfileBtn.style.display = 'none';
     }
-    // Clear for new
-    document.getElementById('pid').value = '';
-    document.getElementById('pname').value = '';
-    document.getElementById('pgender').value = '';
-    document.getElementById('page').value = '';
-    document.getElementById('pidType').value = '';
-    document.getElementById('pidNumber').value = '';
-    document.getElementById('pmobile').value = '';
-    document.getElementById('pcity').value = '';
-    document.getElementById('pstate').value = '';
-    document.getElementById('ppincode').value = '';
-    deleteProfileBtn.style.display = 'none';
-  });
+  }
+
+  newProfileBtn.addEventListener('click', () => openEditForm(null));
 
   cancelProfileBtn.addEventListener('click', () => {
     profileForm.classList.add('hidden');
@@ -85,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     await ProfileStorage.saveProfile(p);
     await loadProfiles();
-    profileSelect.value = p.id; 
     profileForm.classList.add('hidden');
   });
 
@@ -100,13 +116,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Communication with content script
   fillFormBtn.addEventListener('click', async () => {
-    const selectedId = profileSelect.value;
-    if (!selectedId) {
-      statusText.textContent = "Please select a profile first.";
+    const checkboxes = document.querySelectorAll('.profile-checkbox:checked');
+    const selectedIds = Array.from(checkboxes).map(c => c.value);
+    
+    if (selectedIds.length === 0) {
+      statusText.textContent = "Please select at least one profile.";
       return;
     }
-    const profile = currentProfiles.find(x => x.id === selectedId);
-    if (!profile) return;
+    
+    // Map IDs to actual profile objects in the order they were selected (or list order)
+    const selectedProfiles = selectedIds.map(id => currentProfiles.find(p => p.id === id)).filter(Boolean);
 
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -116,14 +135,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: 'fillForm',
-        profile: profile
+        profiles: selectedProfiles
       });
       
       if (response && response.success) {
         statusText.textContent = "Form filled!";
         fieldsFound.textContent = response.stats.found;
         fieldsFilled.textContent = response.stats.filled;
-        fieldsMissing.textContent = response.stats.missingCount + (response.stats.missingCount > 0 ? ` (${response.stats.missingFields.join(', ')})` : '');
+        fieldsMissing.textContent = response.stats.missingCount;
         fillTime.textContent = response.stats.duration.toFixed(2) + " ms";
       } else {
         statusText.textContent = response?.error || "Error or no form detected.";

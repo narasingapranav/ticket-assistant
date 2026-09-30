@@ -1,21 +1,20 @@
-// adapters/ttd.js
-// Website Adapter for TTD Angapradakshinam (and mock page)
-
 const TTDAdapter = {
   name: "TTD",
   
-  // Maps standard profile keys to a function that locates the DOM element
-  fieldMap: {
-    name: () => document.querySelector('input[name="name"], input#name, input[placeholder*="Name" i]'),
-    gender: () => document.querySelector('select[name="gender"], select#gender'),
-    age: () => document.querySelector('input[name="age"], input#age'),
-    idType: () => document.querySelector('select[name="idProofType"], select#idProofType, select#idType'),
-    idNumber: () => document.querySelector('input[name="idProofNumber"], input#idProofNumber, input#idNumber'),
-    mobile: () => document.querySelector('input[name="mobile"], input#mobile, input[placeholder*="Mobile" i]'),
-    city: () => document.querySelector('input[name="city"], input#city'),
-    state: () => document.querySelector('input[name="state"], input#state'),
-    pincode: () => document.querySelector('input[name="pincode"], input#pincode, input[name="zip"]')
-  },
+  // fieldMap is now a function that takes the index of the pilgrim
+  // This allows the autofill engine to find fields for Pilgrim 1 (index 0), Pilgrim 2 (index 1), etc.
+  fieldMap: (index) => ({
+    name: () => document.querySelectorAll('input[name="name"], input[placeholder*="Name" i]')[index],
+    gender: () => document.querySelectorAll('select[name="gender"]')[index],
+    age: () => document.querySelectorAll('input[name="age"]')[index],
+    idType: () => document.querySelectorAll('select[name="idProofType"], select[name="idType"]')[index],
+    idNumber: () => document.querySelectorAll('input[name="idProofNumber"], input[name="idNumber"]')[index],
+    // Contact details typically only appear once per booking form, so we always target index 0
+    mobile: () => document.querySelectorAll('input[name="mobile"], input[placeholder*="Mobile" i]')[0],
+    city: () => document.querySelectorAll('input[name="city"]')[0],
+    state: () => document.querySelectorAll('input[name="state"]')[0],
+    pincode: () => document.querySelectorAll('input[name="pincode"], input[name="zip"]')[0]
+  }),
 
   formatters: {
     gender: (val, element) => {

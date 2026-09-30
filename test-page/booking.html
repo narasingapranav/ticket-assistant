@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <title>Mock Booking Page</title>
   <link rel="stylesheet" href="booking.css">
+  <style>
+    .pilgrim-section, .contact-section {
+      border: 1px solid #e0e0e0;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    .section-title {
+      margin-top: 0;
+      color: #333;
+      font-size: 16px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
 
@@ -12,60 +29,102 @@
     <p>Please enter pilgrim details.</p>
 
     <form id="bookingForm" onsubmit="event.preventDefault(); alert('Submit clicked!');">
-      <div class="form-group">
-        <label for="name">Full Name *</label>
-        <input type="text" id="name" name="name" placeholder="Enter Full Name">
+      
+      <div class="pilgrim-section">
+        <h3 class="section-title">Pilgrim 1 Details</h3>
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="name" placeholder="Enter Full Name">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select name="gender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Age *</label>
+            <input type="number" name="age" placeholder="Age">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ID Proof Type *</label>
+            <select name="idProofType">
+              <option value="">Select ID Proof</option>
+              <option value="Aadhaar">Aadhaar Card</option>
+              <option value="PAN">PAN Card</option>
+              <option value="VoterID">Voter ID</option>
+              <option value="Passport">Passport</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ID Proof Number *</label>
+            <input type="text" name="idProofNumber" placeholder="ID Number">
+          </div>
+        </div>
       </div>
 
-      <div class="form-row">
+      <div class="pilgrim-section">
+        <h3 class="section-title">Pilgrim 2 Details</h3>
         <div class="form-group">
-          <label for="gender">Gender *</label>
-          <select id="gender" name="gender">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
+          <label>Full Name *</label>
+          <input type="text" name="name" placeholder="Enter Full Name">
         </div>
-        <div class="form-group">
-          <label for="age">Age *</label>
-          <input type="number" id="age" name="age" placeholder="Age">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select name="gender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Age *</label>
+            <input type="number" name="age" placeholder="Age">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ID Proof Type *</label>
+            <select name="idProofType">
+              <option value="">Select ID Proof</option>
+              <option value="Aadhaar">Aadhaar Card</option>
+              <option value="PAN">PAN Card</option>
+              <option value="VoterID">Voter ID</option>
+              <option value="Passport">Passport</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ID Proof Number *</label>
+            <input type="text" name="idProofNumber" placeholder="ID Number">
+          </div>
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="contact-section">
+        <h3 class="section-title">Contact Information</h3>
         <div class="form-group">
-          <label for="idProofType">ID Proof Type *</label>
-          <select id="idProofType" name="idProofType">
-            <option value="">Select ID Proof</option>
-            <option value="Aadhaar">Aadhaar Card</option>
-            <option value="PAN">PAN Card</option>
-            <option value="VoterID">Voter ID</option>
-            <option value="Passport">Passport</option>
-          </select>
+          <label>Mobile Number *</label>
+          <input type="text" name="mobile" placeholder="10 digit mobile">
         </div>
-        <div class="form-group">
-          <label for="idProofNumber">ID Proof Number *</label>
-          <input type="text" id="idProofNumber" name="idProofNumber" placeholder="ID Number">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="mobile">Mobile Number *</label>
-        <input type="text" id="mobile" name="mobile" placeholder="10 digit mobile">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="city">City</label>
-          <input type="text" id="city" name="city">
-        </div>
-        <div class="form-group">
-          <label for="state">State</label>
-          <input type="text" id="state" name="state">
-        </div>
-        <div class="form-group">
-          <label for="pincode">PIN Code</label>
-          <input type="text" id="pincode" name="pincode">
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" name="city">
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" name="state">
+          </div>
+          <div class="form-group">
+            <label>PIN Code</label>
+            <input type="text" name="pincode">
+          </div>
         </div>
       </div>
 
