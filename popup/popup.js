@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileList.innerHTML = '';
     
     if (currentProfiles.length === 0) {
-      profileList.innerHTML = '<div style="padding: 5px; color: #777; font-size: 12px;">No profiles found.</div>';
+      profileList.innerHTML = '<div style="padding: 12px; color: var(--text-muted); font-size: 13px; text-align: center;">No profiles found.</div>';
       return;
     }
 
@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       chk.type = 'checkbox';
       chk.value = p.id;
       chk.className = 'profile-checkbox';
-      // Auto-check the first one by default if none checked previously (optional, but good UX)
       if (i === 0) chk.checked = true;
       
       lbl.appendChild(chk);
@@ -41,7 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const editBtn = document.createElement('button');
       editBtn.className = 'edit-btn';
-      editBtn.textContent = 'Edit';
+      editBtn.title = 'Edit';
+      // Inline SVG for edit icon
+      editBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
       editBtn.onclick = () => openEditForm(p);
 
       item.appendChild(lbl);
@@ -54,6 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function openEditForm(p) {
     profileForm.classList.remove('hidden');
+    const formTitle = document.getElementById('formTitle');
+    if (formTitle) formTitle.textContent = p ? 'Edit Profile' : 'New Profile';
+    
     if (p) {
       document.getElementById('pid').value = p.id;
       document.getElementById('pname').value = p.name || '';
@@ -114,17 +118,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileForm.classList.add('hidden');
   });
 
-  // Communication with content script
   fillFormBtn.addEventListener('click', async () => {
     const checkboxes = document.querySelectorAll('.profile-checkbox:checked');
     const selectedIds = Array.from(checkboxes).map(c => c.value);
     
     if (selectedIds.length === 0) {
-      statusText.textContent = "Please select at least one profile.";
+      statusText.textContent = "Select at least 1 profile";
       return;
     }
     
-    // Map IDs to actual profile objects in the order they were selected (or list order)
     const selectedProfiles = selectedIds.map(id => currentProfiles.find(p => p.id === id)).filter(Boolean);
 
     try {
@@ -148,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusText.textContent = response?.error || "Error or no form detected.";
       }
     } catch (e) {
-      statusText.textContent = "Could not communicate with page.";
+      statusText.textContent = "Cannot communicate with page.";
       console.error(e);
     }
   });
@@ -159,12 +161,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tab) {
       const res = await chrome.tabs.sendMessage(tab.id, { action: 'checkPage' });
       if (res && res.isSupported) {
-        statusText.textContent = `${res.adapterName} booking page detected`;
+        statusText.textContent = `Page detected: ${res.adapterName}`;
       } else {
-        statusText.textContent = "No supported booking form detected";
+        statusText.textContent = "No supported booking form";
       }
     }
   } catch (e) {
-    statusText.textContent = "No supported booking form detected (or cannot read page).";
+    statusText.textContent = "Cannot read page.";
   }
 });

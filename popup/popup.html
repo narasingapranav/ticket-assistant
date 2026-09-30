@@ -6,61 +6,116 @@
 </head>
 <body>
   <div class="header">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-icon"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
     <h2>TicketAssist</h2>
   </div>
 
-  <div class="section profile-section">
-    <div class="flex-header">
-      <label>Select Pilgrims:</label>
-      <button id="newProfileBtn" class="small-btn">New Profile</button>
+  <div class="container">
+    <!-- Profile Selection -->
+    <div class="section">
+      <div class="flex-header">
+        <label class="section-label">Select Pilgrims</label>
+        <button id="newProfileBtn" class="text-btn">+ New Profile</button>
+      </div>
+      <div id="profileList" class="checkbox-list">
+        <!-- Generated via JS -->
+      </div>
     </div>
-    <div id="profileList" class="checkbox-list">
-      <!-- Generated via JS -->
+
+    <!-- Fill Form Button -->
+    <div class="section main-action">
+      <button id="fillFormBtn" class="primary-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        Auto-Fill Selected
+      </button>
     </div>
-  </div>
 
-  <div id="profileForm" class="hidden">
-    <input type="hidden" id="pid">
-    <label>Name: <input type="text" id="pname"></label>
-    <label>Gender: 
-      <select id="pgender">
-        <option value="">Select</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
-    </label>
-    <label>Age: <input type="number" id="page"></label>
-    <label>ID Type: 
-      <select id="pidType">
-        <option value="">Select</option>
-        <option value="Aadhaar">Aadhaar</option>
-        <option value="PAN">PAN</option>
-        <option value="VoterID">Voter ID</option>
-        <option value="Passport">Passport</option>
-      </select>
-    </label>
-    <label>ID Number: <input type="text" id="pidNumber"></label>
-    <label>Mobile: <input type="text" id="pmobile"></label>
-    <label>City: <input type="text" id="pcity"></label>
-    <label>State: <input type="text" id="pstate"></label>
-    <label>PIN Code: <input type="text" id="ppincode"></label>
-    <div class="form-actions">
-      <button id="saveProfileBtn">Save</button>
-      <button id="cancelProfileBtn">Cancel</button>
-      <button id="deleteProfileBtn" class="danger">Delete</button>
+    <!-- Status Dashboard -->
+    <div class="section status-section">
+      <div class="status-header">
+        <span id="statusText">Checking page...</span>
+        <span id="fillTime" class="badge badge-neutral">-- ms</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="fieldsFound">-</span>
+          <span class="stat-label">Found</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value text-success" id="fieldsFilled">-</span>
+          <span class="stat-label">Filled</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value text-danger" id="fieldsMissing">-</span>
+          <span class="stat-label">Missing</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="section main-action">
-    <button id="fillFormBtn" class="primary-btn">Fill Form</button>
-  </div>
+    <!-- Profile Edit Form (Hidden by default) -->
+    <div id="profileForm" class="overlay hidden">
+      <div class="modal-content">
+        <h3 id="formTitle">Edit Profile</h3>
+        <input type="hidden" id="pid">
+        
+        <div class="form-grid">
+          <div class="input-group full-width">
+            <label>Full Name</label>
+            <input type="text" id="pname" placeholder="John Doe">
+          </div>
+          <div class="input-group">
+            <label>Gender</label>
+            <select id="pgender">
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Age</label>
+            <input type="number" id="page" placeholder="Age">
+          </div>
+          <div class="input-group">
+            <label>ID Type</label>
+            <select id="pidType">
+              <option value="">Select</option>
+              <option value="Aadhaar">Aadhaar</option>
+              <option value="PAN">PAN</option>
+              <option value="VoterID">Voter ID</option>
+              <option value="Passport">Passport</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>ID Number</label>
+            <input type="text" id="pidNumber" placeholder="ID Number">
+          </div>
+          <div class="input-group full-width">
+            <label>Mobile Number</label>
+            <input type="text" id="pmobile" placeholder="10-digit mobile">
+          </div>
+          <div class="input-group">
+            <label>City</label>
+            <input type="text" id="pcity" placeholder="City">
+          </div>
+          <div class="input-group">
+            <label>State</label>
+            <input type="text" id="pstate" placeholder="State">
+          </div>
+          <div class="input-group full-width">
+            <label>PIN Code</label>
+            <input type="text" id="ppincode" placeholder="PIN Code">
+          </div>
+        </div>
 
-  <div class="section status-section">
-    <div>Status: <span id="statusText">Checking page...</span></div>
-    <div>Fields found: <span id="fieldsFound">-</span></div>
-    <div>Fields filled: <span id="fieldsFilled">-</span></div>
-    <div>Fields missing: <span id="fieldsMissing">-</span></div>
-    <div>Time: <span id="fillTime">-- ms</span></div>
+        <div class="form-actions">
+          <button id="deleteProfileBtn" class="text-btn text-danger">Delete</button>
+          <div class="right-actions">
+            <button id="cancelProfileBtn" class="secondary-btn">Cancel</button>
+            <button id="saveProfileBtn" class="primary-btn">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="../storage/profiles.js"></script>
