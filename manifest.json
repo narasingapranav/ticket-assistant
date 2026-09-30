@@ -6,7 +6,8 @@
 
   "permissions": ["storage"],
   "host_permissions": [
-    "https://*.tirupatibalaji.ap.gov.in/*"
+    "https://*.tirupatibalaji.ap.gov.in/*",
+    "https://*.ttdevasthanams.ap.gov.in/*"
   ],
 
   "icons": {
@@ -26,7 +27,12 @@
 
   "content_scripts": [
     {
-      "matches": ["file:///*", "http://localhost/*", "https://*.tirupatibalaji.ap.gov.in/*"],
+      "matches": [
+        "file:///*", 
+        "http://localhost/*", 
+        "https://*.tirupatibalaji.ap.gov.in/*",
+        "https://*.ttdevasthanams.ap.gov.in/*"
+      ],
       "js": [
         "adapters/ttd.js",
         "content/autofill.js",

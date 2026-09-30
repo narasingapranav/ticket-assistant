@@ -29,10 +29,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function determineAdapter() {
   const url = window.location.href;
-  if (url.includes('tirupatibalaji.ap.gov.in') || url.includes('booking.html')) {
+  
+  // Checking both the older Tirupati Balaji domain and the new official TTDevasthanams domain
+  if (url.includes('tirupatibalaji.ap.gov.in') || url.includes('ttdevasthanams.ap.gov.in') || url.includes('booking.html')) {
     if (typeof TTDAdapter !== 'undefined') {
       return TTDAdapter;
     }
   }
+  
   return null;
 }
