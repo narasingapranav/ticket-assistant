@@ -1,24 +1,24 @@
 # TicketAssist
 
-TicketAssist is a Chrome extension designed to save traveler details and quickly fill them into supported TTD temple booking forms. It keeps profile data in browser storage and fills only the fields it recognizes on the page without submitting or booking anything.
+TicketAssist is a Chrome extension for saving traveler details and filling them into supported temple booking forms. It keeps profile data in browser storage and only fills recognized fields on supported pages.
 
-## What it does
+## Features
 
-- Saves multiple pilgrim profiles locally in the browser
-- Lets you select one or more saved profiles from the extension popup
-- Detects supported temple booking pages
-- Fills common fields such as name, gender, age, ID type, ID number, mobile, email, city, state, country, and pincode
-- Works with the sample local test page and the supported official booking domains
+- Save multiple traveler profiles locally in Chrome storage
+- Select one or more saved profiles from the extension popup
+- Detect supported booking pages automatically
+- Fill common pilgrim fields such as name, gender, age, ID type, ID number, mobile, email, city, state, country, and pincode
+- Works with the included local test page and the supported booking domains
 
 ## Safety and scope
 
-This extension is intentionally limited to form filling. It does not complete a booking or payment flow. It only reads the current page and writes values into recognized form inputs.
+This extension is purposely limited to form filling. It does not submit bookings, complete payments, or perform any booking workflow on its own. It only reads the current page and writes values into target form inputs when they are detected.
 
 ## Supported pages
 
 The extension is configured to work with:
 
-- local test pages such as `file://` and `http://localhost/*`
+- local file and localhost testing pages
 - Tirupati Balaji booking pages
 - TT Devasthanams booking pages
 
@@ -27,51 +27,52 @@ The extension is configured to work with:
 - `manifest.json` – Chrome extension manifest
 - `content/` – page detection and autofill logic
 - `adapters/` – site-specific field mappings
-- `popup/` – extension popup UI
-- `storage/` – local profile storage helpers
-- `test-page/` – sample page for testing locally
+- `popup/` – popup UI and profile management
+- `storage/` – browser-local profile storage
+- `test-page/` – sample booking page for local testing
 - `icons/` – extension icons
+- `LICENSE` – MIT license file
 
 ## Installation
 
 1. Open `chrome://extensions` in Google Chrome.
-2. Turn on Developer mode.
+2. Enable Developer mode.
 3. Click Load unpacked.
-4. Select the folder containing `manifest.json`.
-5. Open the extension details and enable Allow access to file URLs if you are testing on local files.
+4. Select the project folder containing `manifest.json`.
+5. If testing on local files, open extension details and enable Allow access to file URLs.
 
 ## Local testing
 
-1. Open the sample page at `test-page/booking.html`.
+1. Open `test-page/booking.html` in the browser.
 2. Press F12 to open DevTools.
 3. Check the Console for a message similar to:
    `[TicketAssist] content script loaded on: file:///...`
 4. Click the TicketAssist extension icon in the toolbar.
-5. Create or select a profile and click Fill Form.
-6. Confirm the form fields are populated on the page.
+5. Create or choose a profile and click Fill Form.
+6. Review the values filled into the page before submitting anything manually.
 
 ## Typical workflow
 
-1. Save a traveler profile in the extension popup.
+1. Save a traveler profile from the popup.
 2. Open a supported booking form.
-3. Select the saved profile(s) you want to use.
+3. Select the desired saved profile(s).
 4. Click Fill Form.
-5. Review the filled values before submitting anything manually.
+5. Verify the information and continue manually.
 
 ## Development notes
 
-This project is a browser extension prototype and is best suited for local testing and extension development. It uses Chrome storage for persistence and site-specific selectors to map form fields to profile data.
+This repository is a browser extension prototype intended for local testing and extension development. It uses Chrome storage for persistence and context-specific selectors to map common form fields to saved profile data.
 
 ## Future improvements
 
-Potential enhancements include:
+Possible enhancements include:
 
-- better multi-profile validation and duplicate detection
-- improved selectors for different booking page layouts
-- support for more temple portals and form variants
-- UI polish and profile import/export
-- live form-status messaging and error handling
+- better multi-profile validation and duplicate handling
+- more resilient selectors for layout variations
+- support for additional booking portals
+- profile import/export
+- cleaner UX and status messaging
 
 ## License
 
-This project is currently unlicensed unless otherwise specified in the repository.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
