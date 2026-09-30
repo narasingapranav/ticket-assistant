@@ -15,8 +15,10 @@ const TTDAdapter = {
     // This prevents Pilgrim 2 from overwriting Pilgrim 1's contact info, and stops the engine from falsely reporting them as "missing" for Pilgrim 2.
     if (index === 0) {
       map.mobile = () => document.querySelectorAll('input[name="mobile"], input[placeholder*="Mobile" i]')[0];
+      map.email = () => document.querySelectorAll('input[type="email"], input[name="email"], input[name="gmail"], input[placeholder*="Email" i], input[placeholder*="Gmail" i]')[0];
       map.city = () => document.querySelectorAll('input[name="city"]')[0];
       map.state = () => document.querySelectorAll('input[name="state"]')[0];
+      map.country = () => document.querySelectorAll('input[name="country"]')[0];
       map.pincode = () => document.querySelectorAll('input[name="pincode"], input[name="zip"]')[0];
     }
 

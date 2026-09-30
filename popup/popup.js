@@ -66,8 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('pidType').value = p.idType || '';
       document.getElementById('pidNumber').value = p.idNumber || '';
       document.getElementById('pmobile').value = p.mobile || '';
+      document.getElementById('pemail').value = p.email || '';
       document.getElementById('pcity').value = p.city || '';
       document.getElementById('pstate').value = p.state || '';
+      document.getElementById('pcountry').value = p.country || '';
       document.getElementById('ppincode').value = p.pincode || '';
       deleteProfileBtn.style.display = 'block';
     } else {
@@ -78,8 +80,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('pidType').value = '';
       document.getElementById('pidNumber').value = '';
       document.getElementById('pmobile').value = '';
+      document.getElementById('pemail').value = '';
       document.getElementById('pcity').value = '';
       document.getElementById('pstate').value = '';
+      document.getElementById('pcountry').value = '';
       document.getElementById('ppincode').value = '';
       deleteProfileBtn.style.display = 'none';
     }
@@ -100,8 +104,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       idType: document.getElementById('pidType').value,
       idNumber: document.getElementById('pidNumber').value,
       mobile: document.getElementById('pmobile').value,
+      email: document.getElementById('pemail').value,
       city: document.getElementById('pcity').value,
       state: document.getElementById('pstate').value,
+      country: document.getElementById('pcountry').value,
       pincode: document.getElementById('ppincode').value
     };
     await ProfileStorage.saveProfile(p);
