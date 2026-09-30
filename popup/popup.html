@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <h2>TicketAssist</h2>
+  </div>
+
+  <div class="section profile-section">
+    <label for="profileSelect">Profile:</label>
+    <select id="profileSelect">
+      <option value="">-- Select Profile --</option>
+    </select>
+    <button id="manageBtn" class="small-btn">Edit/New</button>
+  </div>
+
+  <div id="profileForm" class="hidden">
+    <input type="hidden" id="pid">
+    <label>Name: <input type="text" id="pname"></label>
+    <label>Gender: 
+      <select id="pgender">
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </label>
+    <label>Age: <input type="number" id="page"></label>
+    <label>ID Type: 
+      <select id="pidType">
+        <option value="">Select</option>
+        <option value="Aadhaar">Aadhaar</option>
+        <option value="PAN">PAN</option>
+        <option value="VoterID">Voter ID</option>
+        <option value="Passport">Passport</option>
+      </select>
+    </label>
+    <label>ID Number: <input type="text" id="pidNumber"></label>
+    <label>Mobile: <input type="text" id="pmobile"></label>
+    <label>City: <input type="text" id="pcity"></label>
+    <label>State: <input type="text" id="pstate"></label>
+    <label>PIN Code: <input type="text" id="ppincode"></label>
+    <div class="form-actions">
+      <button id="saveProfileBtn">Save</button>
+      <button id="cancelProfileBtn">Cancel</button>
+      <button id="deleteProfileBtn" class="danger">Delete</button>
+    </div>
+  </div>
+
+  <div class="section main-action">
+    <button id="fillFormBtn" class="primary-btn">Fill Form</button>
+  </div>
+
+  <div class="section status-section">
+    <div>Status: <span id="statusText">Checking page...</span></div>
+    <div>Fields found: <span id="fieldsFound">-</span></div>
+    <div>Fields filled: <span id="fieldsFilled">-</span></div>
+    <div>Fields missing: <span id="fieldsMissing">-</span></div>
+    <div>Time: <span id="fillTime">-- ms</span></div>
+  </div>
+
+  <script src="../storage/profiles.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

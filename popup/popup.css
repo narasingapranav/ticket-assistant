@@ -1,0 +1,106 @@
+body {
+  width: 320px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 10px;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.header {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.header h2 {
+  margin: 0 0 10px 0;
+  color: #1a73e8;
+}
+
+.section {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: bold;
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+button:hover {
+  background-color: #d0d0d0;
+}
+
+.primary-btn {
+  width: 100%;
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.primary-btn:hover {
+  background-color: #1557b0;
+}
+
+.small-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.danger {
+  background-color: #d93025;
+  color: white;
+}
+
+.danger:hover {
+  background-color: #b3261e;
+}
+
+.hidden {
+  display: none;
+}
+
+.status-section {
+  font-size: 12px;
+  background: #eee;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.status-section div {
+  margin-bottom: 4px;
+}
+
+#profileForm {
+  background: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
