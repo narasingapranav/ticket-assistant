@@ -65,14 +65,16 @@ const AutofillEngine = {
 
   async setElementValue(element, value) {
     element.focus();
+    const isCustomDropdown = element.getAttribute('role') === 'combobox' ||
+      element.getAttribute('aria-haspopup') === 'listbox' ||
+      (element.readOnly && ['gender', 'idtype'].includes((element.name || '').toLowerCase()));
 
     if (element.tagName === 'SELECT') {
       element.value = value;
       if (element.value !== value) {
         return { verified: false, reason: 'no matching option' };
       }
-    } else if (element.getAttribute('role') === 'combobox' ||
-      element.getAttribute('aria-haspopup') === 'listbox') {
+    } else if (isCustomDropdown) {
       element.click();
       const normalizeOption = (text) => text
         .replace(/\s+card$/i, '')
@@ -82,16 +84,24 @@ const AutofillEngine = {
       let option = null;
       for (let attempt = 0; attempt < 10 && !option; attempt++) {
         await new Promise((resolve) => setTimeout(resolve, 50));
-        option = Array.from(document.querySelectorAll('[role="option"], mat-option'))
-          .find((candidate) => normalizeOption(
-            candidate.getAttribute('aria-label') || candidate.textContent
-          ) === normalizedValue);
+        const candidates = Array.from(document.querySelectorAll(
+          'li[class*="listItem" i], li, [role="option"], mat-option, [class*="option" i]'
+        )).filter((candidate) => candidate.getClientRects().length > 0);
+        option = candidates.find((candidate) => normalizeOption(
+          candidate.getAttribute('aria-label') || candidate.textContent
+        ) === normalizedValue);
       }
       if (!option) {
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
         return { verified: false, reason: 'no matching option' };
       }
-      option.click();
+      const optionTarget = option.closest('li') || option;
+      optionTarget.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+      optionTarget.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+      optionTarget.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      for (let attempt = 0; attempt < 10 && element.value !== String(value); attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
     } else if (element.type === 'checkbox' || element.type === 'radio') {
       element.checked = true;
     } else {
@@ -105,9 +115,10 @@ const AutofillEngine = {
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
     element.blur();
-    const verified = element.getAttribute('role') === 'combobox' ||
-      element.getAttribute('aria-haspopup') === 'listbox'
-      ? element.textContent.trim().toLowerCase().includes(String(value).trim().toLowerCase())
+    const verified = isCustomDropdown
+      ? element.value === String(value) ||
+        element.value.trim().toLowerCase() === String(value).trim().toLowerCase() ||
+        element.value.trim().toLowerCase() === `${String(value).trim().toLowerCase()} card`
       : element.type === 'checkbox' || element.type === 'radio'
       ? element.checked
       : element.value === String(value);
