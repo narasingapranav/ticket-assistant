@@ -139,6 +139,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileForm.classList.add('hidden');
   });
 
+  async function sendPageMessage(tabId, message) {
+    try {
+      return await chrome.tabs.sendMessage(tabId, message);
+    } catch (error) {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        files: ['adapters/ttd.js', 'content/autofill.js', 'content/content.js']
+      });
+      return chrome.tabs.sendMessage(tabId, message);
+    }
+  }
+
   fillFormBtn.addEventListener('click', async () => {
     const checkboxes = document.querySelectorAll('.profile-checkbox:checked');
     const selectedIds = Array.from(checkboxes).map(c => c.value);
@@ -156,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       statusText.textContent = "Filling form...";
       
-      const response = await chrome.tabs.sendMessage(tab.id, {
+      const response = await sendPageMessage(tab.id, {
         action: 'fillForm',
         profiles: selectedProfiles
       });
@@ -181,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusText.textContent = response?.error || "Error or no form detected.";
       }
     } catch (e) {
-      statusText.textContent = "Cannot communicate with page.";
+      statusText.textContent = e.message || "Cannot communicate with page.";
       console.error(e);
     }
   });
@@ -190,7 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab) {
-      const res = await chrome.tabs.sendMessage(tab.id, { action: 'checkPage' });
+      const res = await sendPageMessage(tab.id, { action: 'checkPage' });
       if (res && res.isSupported) {
         statusText.textContent = `Page detected: ${res.adapterName}`;
       } else {

@@ -1,5 +1,5 @@
 const AutofillEngine = {
-  fill(profiles, adapter) {
+  async fill(profiles, adapter) {
     // Ensure profiles is an array to support multiple pilgrims
     if (!Array.isArray(profiles)) {
       profiles = [profiles];
@@ -16,7 +16,7 @@ const AutofillEngine = {
       timing: { scan: 0, domWrites: 0, fieldsCompleted: 0 }
     };
 
-    profiles.forEach((profile, index) => {
+    for (const [index, profile] of profiles.entries()) {
       // Determine if fieldMap is a function (multi-user) or object (single-user legacy)
       const fieldMap = typeof adapter.fieldMap === 'function' 
         ? adapter.fieldMap(index) 
@@ -37,7 +37,7 @@ const AutofillEngine = {
           }
 
           const writeStart = performance.now();
-          const result = this.setElementValue(element, valueToFill);
+          const result = await this.setElementValue(element, valueToFill);
           stats.timing.domWrites += performance.now() - writeStart;
           if (result.verified) {
             stats.filled++;
@@ -50,7 +50,7 @@ const AutofillEngine = {
           stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1}) - field not found`);
         }
       }
-    });
+    }
 
     const endTime = performance.now();
     stats.timing.scan = endTime - scanStart - stats.timing.domWrites;
@@ -63,7 +63,7 @@ const AutofillEngine = {
     return { idType: 'ID Proof Type', idNumber: 'ID Proof Number', pincode: 'PIN Code' }[key] || key.charAt(0).toUpperCase() + key.slice(1);
   },
 
-  setElementValue(element, value) {
+  async setElementValue(element, value) {
     element.focus();
 
     if (element.tagName === 'SELECT') {
@@ -71,6 +71,27 @@ const AutofillEngine = {
       if (element.value !== value) {
         return { verified: false, reason: 'no matching option' };
       }
+    } else if (element.getAttribute('role') === 'combobox' ||
+      element.getAttribute('aria-haspopup') === 'listbox') {
+      element.click();
+      const normalizeOption = (text) => text
+        .replace(/\s+card$/i, '')
+        .replace(/[^a-z0-9]/gi, '')
+        .toLowerCase();
+      const normalizedValue = normalizeOption(String(value));
+      let option = null;
+      for (let attempt = 0; attempt < 10 && !option; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        option = Array.from(document.querySelectorAll('[role="option"], mat-option'))
+          .find((candidate) => normalizeOption(
+            candidate.getAttribute('aria-label') || candidate.textContent
+          ) === normalizedValue);
+      }
+      if (!option) {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        return { verified: false, reason: 'no matching option' };
+      }
+      option.click();
     } else if (element.type === 'checkbox' || element.type === 'radio') {
       element.checked = true;
     } else {
@@ -84,7 +105,10 @@ const AutofillEngine = {
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
     element.blur();
-    const verified = element.type === 'checkbox' || element.type === 'radio'
+    const verified = element.getAttribute('role') === 'combobox' ||
+      element.getAttribute('aria-haspopup') === 'listbox'
+      ? element.textContent.trim().toLowerCase().includes(String(value).trim().toLowerCase())
+      : element.type === 'checkbox' || element.type === 'radio'
       ? element.checked
       : element.value === String(value);
     return {

@@ -1,6 +1,6 @@
 let formDetectedAt = null;
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.action === 'checkPage') {
     const adapter = determineAdapter();
     sendResponse({ 
@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       // Support array of profiles
       const profilesToFill = request.profiles || (request.profile ? [request.profile] : []);
       const fillReceivedAt = performance.now();
-      const stats = AutofillEngine.fill(profilesToFill, adapter);
+      const stats = await AutofillEngine.fill(profilesToFill, adapter);
       stats.timing.formDetectedAt = formDetectedAt;
       stats.timing.fillReceivedAt = fillReceivedAt;
       stats.timing.fieldsCompletedAt = performance.now();
