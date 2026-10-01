@@ -47,7 +47,7 @@ const AutofillEngine = {
           }
         } else {
           stats.missingCount++;
-          stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1}) - field not found`);
+          stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1})`);
         }
       }
     }

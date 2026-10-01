@@ -26,5 +26,5 @@ coverage/
 *.zip
 
 # Local test fixtures and captured website files
-/test-page/
+/test?page/
 /ttd_website_format/

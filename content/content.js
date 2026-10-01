@@ -36,15 +36,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
 function determineAdapter() {
   const hostname = window.location.hostname.toLowerCase();
-  const isLocalTestPage = window.location.protocol === 'file:' &&
-    window.location.pathname.toLowerCase().endsWith('/test-page/booking.html');
   const isSupportedHost = hostname === 'tirupatibalaji.ap.gov.in' ||
     hostname.endsWith('.tirupatibalaji.ap.gov.in') ||
     hostname === 'ttdevasthanams.ap.gov.in' ||
-    hostname.endsWith('.ttdevasthanams.ap.gov.in') ||
-    (window.location.hostname === 'localhost');
+    hostname.endsWith('.ttdevasthanams.ap.gov.in');
 
-  if ((isLocalTestPage || isSupportedHost) &&
+  if (isSupportedHost &&
       typeof TTDAdapter !== 'undefined' && TTDAdapter.isFormPresent()) {
     if (formDetectedAt === null) {
       formDetectedAt = performance.now();

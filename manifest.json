@@ -2,7 +2,7 @@
 {
   "manifest_version": 3,
   "name": "TicketAssist",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local form-filling assistant. Fills saved profile data into booking forms after you click. Never submits or books.",
 
   "permissions": ["storage", "scripting"],
@@ -30,8 +30,6 @@
   "content_scripts": [
     {
       "matches": [
-        "file:///*/test-page/booking.html",
-        "http://localhost/*", 
         "https://*.tirupatibalaji.ap.gov.in/*",
         "https://*.ttdevasthanams.ap.gov.in/*"
       ],

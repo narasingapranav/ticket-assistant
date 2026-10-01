@@ -3,14 +3,11 @@ const TTDAdapter = {
   name: "TTD",
 
   isFormPresent() {
-    const hasKnownForm = document.querySelector('form#bookingForm, form[action*="booking" i]');
-    if (hasKnownForm) return true;
-
-    const isAngapradakshinamPage = window.location.pathname.toLowerCase().includes('/agp/');
-    const hasBookingControls = document.querySelector(
-      'input, select, textarea, button'
-    );
-    return isAngapradakshinamPage && !!hasBookingControls;
+    if (!window.location.pathname.toLowerCase().includes('/agp/')) return false;
+    const firstPilgrimFields = TTDAdapter.fieldMap(0);
+    return Object.values(firstPilgrimFields)
+      .filter((getField) => getField())
+      .length >= 3;
   },
 
   fieldMap: (index) => {
@@ -68,35 +65,28 @@ const TTDAdapter = {
       `[name="${name}"]`
     )).filter((element) => element.getClientRects().length > 0)[occurrence] || null;
 
-    const visibleControls = Array.from(document.querySelectorAll(
-      'input, select, textarea, [role="combobox"], [aria-haspopup="listbox"]'
-    ))
-      .filter((element) => element.getClientRects().length > 0);
-    const orderedControl = (position) => visibleControls[position] || null;
-    const pilgrimOffset = index * 5;
-    const generalOffset = Math.max(0, visibleControls.length - 5);
     const livePage = window.location.pathname.toLowerCase().includes('/agp/');
     const labeled = (labels, occurrence) => livePage
       ? findLabeledField(labels, occurrence)
       : null;
 
     const map = {
-      name: () => findNamedField('name', index) || labeled(['name', 'full name'], index) || orderedControl(pilgrimOffset) || findField(section, [
+      name: () => findNamedField('name', index) || labeled(['name', 'full name'], index) || findField(section, [
         'input[name="name"]', 'input[name*="fullName" i]', 'input[id*="name" i]',
         'input[placeholder*="name" i]'
       ], ['full name', 'name']),
-      gender: () => findNamedField('gender', index) || labeled(['gender'], index) || orderedControl(pilgrimOffset + 2) || findField(section, [
+      gender: () => findNamedField('gender', index) || labeled(['gender'], index) || findField(section, [
         'select[name="gender"]', '[name*="gender" i]', '[id*="gender" i]'
       ], ['gender']),
-      age: () => findNamedField('age', index) || labeled(['age'], index) || orderedControl(pilgrimOffset + 1) || findField(section, [
+      age: () => findNamedField('age', index) || labeled(['age'], index) || findField(section, [
         'input[name="age"]', 'input[name*="age" i]', 'input[id*="age" i]',
         'input[placeholder*="age" i]'
       ], ['age']),
-      idType: () => findNamedField('idType', index) || labeled(['photo id proof', 'id proof type'], index) || orderedControl(pilgrimOffset + 3) || findField(section, [
+      idType: () => findNamedField('idType', index) || labeled(['photo id proof', 'id proof type'], index) || findField(section, [
         'select[name="idProofType"]', 'select[name="idType"]',
         '[name*="proof" i]', '[id*="proof" i]'
       ], ['id proof type', 'photo id proof', 'id proof']),
-      idNumber: () => findNamedField('idNumber', index) || labeled(['photo id number', 'id proof number', 'id number'], index) || orderedControl(pilgrimOffset + 4) || findField(section, [
+      idNumber: () => findNamedField('idNumber', index) || labeled(['photo id number', 'id proof number', 'id number'], index) || findField(section, [
         'input[name="idProofNumber"]', 'input[name="idNumber"]',
         'input[name*="proofNumber" i]', 'input[id*="proofNumber" i]',
         'input[placeholder*="id number" i]'
@@ -108,19 +98,19 @@ const TTDAdapter = {
         'input[name="mobile"]', 'input[name*="mobile" i]', 'input[id*="mobile" i]',
         'input[placeholder*="mobile" i]'
       ], ['mobile number', 'mobile']);
-      map.email = () => findNamedField('pilgrimEmail', 0) || labeled(['email address', 'email'], 0) || orderedControl(generalOffset) || findField(contactSection, [
+      map.email = () => findNamedField('pilgrimEmail', 0) || labeled(['email address', 'email'], 0) || findField(contactSection, [
         'input[type="email"]', 'input[name="email"]', 'input[name*="email" i]'
       ], ['email address', 'email']);
-      map.city = () => findNamedField('pilgrimCity', 0) || labeled(['city'], 0) || orderedControl(generalOffset + 1) || findField(contactSection, [
+      map.city = () => findNamedField('pilgrimCity', 0) || labeled(['city'], 0) || findField(contactSection, [
         'input[name="city"]', 'input[name*="city" i]', 'input[id*="city" i]'
       ], ['city']);
-      map.state = () => findNamedField('pilgrimState', 0) || labeled(['state'], 0) || orderedControl(generalOffset + 2) || findField(contactSection, [
+      map.state = () => findNamedField('pilgrimState', 0) || labeled(['state'], 0) || findField(contactSection, [
         'input[name="state"]', 'input[name*="state" i]', 'input[id*="state" i]'
       ], ['state']);
-      map.country = () => findNamedField('pilgrimCountry', 0) || labeled(['country'], 0) || orderedControl(generalOffset + 3) || findField(contactSection, [
+      map.country = () => findNamedField('pilgrimCountry', 0) || labeled(['country'], 0) || findField(contactSection, [
         'input[name="country"]', 'input[name*="country" i]', 'input[id*="country" i]'
       ], ['country']);
-      map.pincode = () => findNamedField('pilgrimPincode', 0) || labeled(['pincode', 'pin code'], 0) || orderedControl(generalOffset + 4) || findField(contactSection, [
+      map.pincode = () => findNamedField('pilgrimPincode', 0) || labeled(['pincode', 'pin code'], 0) || findField(contactSection, [
         'input[name="pincode"]', 'input[name="zip"]', 'input[name*="pin" i]',
         'input[id*="pin" i]'
       ], ['pin code', 'pincode', 'zip code', 'pin']);

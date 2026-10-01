@@ -8,7 +8,9 @@ TicketAssist is a Chrome extension for saving traveler details and filling them 
 - Select one or more saved profiles from the extension popup
 - Detect supported booking pages automatically
 - Fill common pilgrim fields such as name, gender, age, ID type, ID number, mobile, email, city, state, country, and pincode
-- Works with the included local test page and the supported booking domains
+- Positional field guessing was removed.
+- Fields that cannot be identified are reported as missing instead of guessed.
+- TTD selectors must be re-checked after any TTD website change.
 
 TTD selectors are unverified against the live site and must be checked against the real booking form before live use.
 
@@ -20,7 +22,6 @@ This extension is purposely limited to form filling. It does not submit bookings
 
 The extension is configured to work with:
 
-- local file and localhost testing pages
 - Tirupati Balaji booking pages
 - TT Devasthanams booking pages
 
@@ -31,7 +32,6 @@ The extension is configured to work with:
 - `adapters/` – site-specific field mappings
 - `popup/` – popup UI and profile management
 - `storage/` – browser-local profile storage
-- `test-page/` – sample booking page for local testing
 - `icons/` – extension icons
 - `LICENSE` – MIT license file
 
@@ -41,18 +41,6 @@ The extension is configured to work with:
 2. Enable Developer mode.
 3. Click Load unpacked.
 4. Select the project folder containing `manifest.json`.
-5. If testing on local files, open extension details and enable Allow access to file URLs.
-
-## Local testing
-
-1. Open `test-page/booking.html` in the browser.
-2. Press F12 to open DevTools.
-3. Check the Console for a message similar to:
-   `[TicketAssist] content script loaded on: file:///...`
-4. Click the TicketAssist extension icon in the toolbar.
-5. Create or choose a profile and click Fill Form.
-6. Review the values filled into the page before submitting anything manually.
-
 ## Typical workflow
 
 1. Save a traveler profile from the popup.
