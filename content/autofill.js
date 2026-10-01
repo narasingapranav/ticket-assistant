@@ -6,12 +6,14 @@ const AutofillEngine = {
     }
 
     const startTime = performance.now();
+    const scanStart = startTime;
     let stats = {
       found: 0,
       filled: 0,
       missingCount: 0,
       missingFields: [],
-      duration: 0
+      duration: 0,
+      timing: { scan: 0, domWrites: 0, fieldsCompleted: 0 }
     };
 
     profiles.forEach((profile, index) => {
@@ -34,21 +36,31 @@ const AutofillEngine = {
             valueToFill = adapter.formatters[key](valueToFill, element);
           }
 
-          this.setElementValue(element, valueToFill);
-          stats.filled++;
+          const writeStart = performance.now();
+          const verified = this.setElementValue(element, valueToFill);
+          stats.timing.domWrites += performance.now() - writeStart;
+          if (verified) {
+            stats.filled++;
+          } else {
+            stats.missingCount++;
+            stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1})`);
+          }
         } else {
-          // If we can't find contact fields for Pilgrim > 0, it's normal (they appear once)
-          // But we will log them for transparency.
           stats.missingCount++;
-          stats.missingFields.push(`${key}(P${index + 1})`);
-          console.warn(`[TicketAssist] Could not identify field: ${key} for Pilgrim ${index + 1}`);
+          stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1})`);
         }
       }
     });
 
     const endTime = performance.now();
+    stats.timing.scan = endTime - scanStart - stats.timing.domWrites;
+    stats.timing.fieldsCompleted = endTime - startTime;
     stats.duration = endTime - startTime;
     return stats;
+  },
+
+  fieldLabel(key) {
+    return { idType: 'ID Proof Type', idNumber: 'ID Proof Number', pincode: 'PIN Code' }[key] || key.charAt(0).toUpperCase() + key.slice(1);
   },
 
   setElementValue(element, value) {
@@ -56,15 +68,20 @@ const AutofillEngine = {
 
     if (element.tagName === 'SELECT') {
       element.value = value;
+      if (element.value !== value) return false;
     } else if (element.type === 'checkbox' || element.type === 'radio') {
-      // Handling checkboxes if needed
+      element.checked = true;
     } else {
-      element.value = value;
+      const setter = Object.getOwnPropertyDescriptor(element.constructor.prototype, 'value')?.set ||
+        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      if (setter) setter.call(element, value);
+      else element.value = value;
     }
 
     // Dispatch events to trigger JS frameworks
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
     element.blur();
+    return element.type === 'checkbox' || element.type === 'radio' ? element.checked : element.value === String(value);
   }
 };

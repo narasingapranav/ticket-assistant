@@ -11,11 +11,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fieldsFilled = document.getElementById('fieldsFilled');
   const fieldsMissing = document.getElementById('fieldsMissing');
   const fillTime = document.getElementById('fillTime');
+  const missingFieldsList = document.getElementById('missingFieldsList');
+  const scanTime = document.getElementById('scanTime');
+  const domWritesTime = document.getElementById('domWritesTime');
+  const completedTime = document.getElementById('completedTime');
+  const detectedTime = document.getElementById('detectedTime');
+  const clickedTime = document.getElementById('clickedTime');
 
   let currentProfiles = [];
 
   async function loadProfiles() {
     currentProfiles = await ProfileStorage.getProfiles();
+    const selection = await chrome.storage.local.get('selectedProfileIds');
+    const selectedProfileIds = selection.selectedProfileIds || [];
     const profileList = document.getElementById('profileList');
     profileList.innerHTML = '';
     
@@ -33,7 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       chk.type = 'checkbox';
       chk.value = p.id;
       chk.className = 'profile-checkbox';
-      if (i === 0) chk.checked = true;
+      chk.checked = selectedProfileIds.length > 0
+        ? selectedProfileIds.includes(p.id)
+        : i === 0;
+      chk.addEventListener('change', async () => {
+        const selected = Array.from(document.querySelectorAll('.profile-checkbox:checked'))
+          .map(checkbox => checkbox.value);
+        await chrome.storage.local.set({ selectedProfileIds: selected });
+      });
       
       lbl.appendChild(chk);
       lbl.appendChild(document.createTextNode(p.name || 'Unnamed'));
@@ -117,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   deleteProfileBtn.addEventListener('click', async () => {
     const id = document.getElementById('pid').value;
-    if (id) {
+    if (id && window.confirm('Delete this profile?')) {
       await ProfileStorage.deleteProfile(id);
       await loadProfiles();
     }
@@ -139,11 +154,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab) return;
       
+      const fillClickedAt = Date.now();
       statusText.textContent = "Filling form...";
       
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: 'fillForm',
-        profiles: selectedProfiles
+        profiles: selectedProfiles,
+        fillClickedAt
       });
       
       if (response && response.success) {
@@ -152,6 +169,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         fieldsFilled.textContent = response.stats.filled;
         fieldsMissing.textContent = response.stats.missingCount;
         fillTime.textContent = response.stats.duration.toFixed(2) + " ms";
+        missingFieldsList.textContent = response.stats.missingFields.length
+          ? `Missing: ${response.stats.missingFields.join(', ')}`
+          : 'Missing: none';
+        scanTime.textContent = response.stats.timing.scan.toFixed(2) + ' ms';
+        domWritesTime.textContent = response.stats.timing.domWrites.toFixed(2) + ' ms';
+        completedTime.textContent = response.stats.timing.fieldsCompleted.toFixed(2) + ' ms';
+        detectedTime.textContent = new Date(response.stats.timing.formDetectedAt).toLocaleTimeString();
+        clickedTime.textContent = new Date(response.stats.timing.fillClickedAt).toLocaleTimeString();
       } else {
         statusText.textContent = response?.error || "Error or no form detected.";
       }

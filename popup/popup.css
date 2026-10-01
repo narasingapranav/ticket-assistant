@@ -246,6 +246,27 @@ button {
   text-align: center;
 }
 
+.missing-fields {
+  margin-top: 12px;
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.timing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 12px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.timing-grid strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
 .stat-box {
   background: var(--bg-subtle);
   padding: 10px 4px;
