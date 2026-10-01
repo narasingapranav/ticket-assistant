@@ -24,3 +24,7 @@ coverage/
 *.pem
 *.crx
 *.zip
+
+# Local test fixtures and captured website files
+/test-page/
+/ttd_website_format/
