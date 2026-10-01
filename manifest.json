@@ -1,7 +1,8 @@
+
 {
   "manifest_version": 3,
   "name": "TicketAssist",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local form-filling assistant. Fills saved profile data into booking forms after you click. Never submits or books.",
 
   "permissions": ["storage"],

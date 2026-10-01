@@ -154,13 +154,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab) return;
       
-      const fillClickedAt = Date.now();
       statusText.textContent = "Filling form...";
       
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: 'fillForm',
-        profiles: selectedProfiles,
-        fillClickedAt
+        profiles: selectedProfiles
       });
       
       if (response && response.success) {
@@ -170,13 +168,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         fieldsMissing.textContent = response.stats.missingCount;
         fillTime.textContent = response.stats.duration.toFixed(2) + " ms";
         missingFieldsList.textContent = response.stats.missingFields.length
-          ? `Missing: ${response.stats.missingFields.join(', ')}`
-          : 'Missing: none';
+          ? `Issues: ${response.stats.missingFields.join(', ')}`
+          : 'Issues: none';
         scanTime.textContent = response.stats.timing.scan.toFixed(2) + ' ms';
         domWritesTime.textContent = response.stats.timing.domWrites.toFixed(2) + ' ms';
-        completedTime.textContent = response.stats.timing.fieldsCompleted.toFixed(2) + ' ms';
-        detectedTime.textContent = new Date(response.stats.timing.formDetectedAt).toLocaleTimeString();
-        clickedTime.textContent = new Date(response.stats.timing.fillClickedAt).toLocaleTimeString();
+        completedTime.textContent = response.stats.timing.fieldsCompletedAt.toFixed(2) + ' ms';
+        detectedTime.textContent = response.stats.timing.formDetectedAt === null
+          ? '--'
+          : response.stats.timing.formDetectedAt.toFixed(2) + ' ms';
+        clickedTime.textContent = response.stats.timing.fillReceivedAt.toFixed(2) + ' ms';
       } else {
         statusText.textContent = response?.error || "Error or no form detected.";
       }

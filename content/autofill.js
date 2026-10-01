@@ -37,17 +37,17 @@ const AutofillEngine = {
           }
 
           const writeStart = performance.now();
-          const verified = this.setElementValue(element, valueToFill);
+          const result = this.setElementValue(element, valueToFill);
           stats.timing.domWrites += performance.now() - writeStart;
-          if (verified) {
+          if (result.verified) {
             stats.filled++;
           } else {
             stats.missingCount++;
-            stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1})`);
+            stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1}) - ${result.reason}`);
           }
         } else {
           stats.missingCount++;
-          stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1})`);
+          stats.missingFields.push(`${this.fieldLabel(key)}(P${index + 1}) - field not found`);
         }
       }
     });
@@ -68,7 +68,9 @@ const AutofillEngine = {
 
     if (element.tagName === 'SELECT') {
       element.value = value;
-      if (element.value !== value) return false;
+      if (element.value !== value) {
+        return { verified: false, reason: 'no matching option' };
+      }
     } else if (element.type === 'checkbox' || element.type === 'radio') {
       element.checked = true;
     } else {
@@ -82,6 +84,12 @@ const AutofillEngine = {
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
     element.blur();
-    return element.type === 'checkbox' || element.type === 'radio' ? element.checked : element.value === String(value);
+    const verified = element.type === 'checkbox' || element.type === 'radio'
+      ? element.checked
+      : element.value === String(value);
+    return {
+      verified,
+      reason: verified ? '' : 'page changed the value'
+    };
   }
 };

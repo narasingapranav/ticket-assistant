@@ -10,6 +10,8 @@ TicketAssist is a Chrome extension for saving traveler details and filling them 
 - Fill common pilgrim fields such as name, gender, age, ID type, ID number, mobile, email, city, state, country, and pincode
 - Works with the included local test page and the supported booking domains
 
+TTD selectors are unverified against the live site and must be checked against the real booking form before live use.
+
 ## Safety and scope
 
 This extension is purposely limited to form filling. It does not submit bookings, complete payments, or perform any booking workflow on its own. It only reads the current page and writes values into target form inputs when they are detected.

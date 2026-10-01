@@ -1,3 +1,4 @@
+// Selectors unverified until tested on the live form.
 const TTDAdapter = {
   name: "TTD",
 

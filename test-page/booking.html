@@ -70,10 +70,23 @@
 
       <div class="pilgrim-section">
         <h3 class="section-title">Pilgrim 2 Details</h3>
-        <!-- Notice we removed Gender and Age for Pilgrim 2 to demonstrate missing fields behavior -->
         <div class="form-group">
           <label>Full Name *</label>
           <input type="text" name="name" placeholder="Enter Full Name">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select name="gender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Age *</label>
+            <input type="number" name="age" placeholder="Age">
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">
